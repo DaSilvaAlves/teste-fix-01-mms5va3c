@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestor de Tarefas</title>
+  <style>
+    /* === GLOBAL STYLES === */
+    :root {
+      --color-bg: #0a0a0a;
+      --color-fg: #ffffff;
+      --color-accent: #00F5FF;
+      --color-accent-secondary: #03A9F4      --blur-amount: 12px;
+      --border-glow: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif      background-color: var(--color-bg);
+      color: var(--color-fg);
+      margin: 0;
+      padding: 0    }
+
+    /* === GLASSMORPHISM === */
+    .glassmorphism {
+     -filter: blur(var(--blur-amount));
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px;
+      border-radius: 4px;
+    }
+
+    /* === BUTTONS === */
+    .button {
+      border: 1px solid var(--color-accent);
+      color: var(--color-accent);
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* === INPUTS === */
+    .input {
+      border-bottom: 1px solid var(--color-accent);
+      background: transparent;
+      padding: 8px;
+      color: var(--colorg);
+    }
+
+    .input:focus {
+      box-shadow 0 2px 8px rgba(var(--color-accent), 0.4);
+    }
+
+    /* === ICONS === */
+    .icon {
+      font-size: 16px;
+      color: var(--color-accent);
+    }
+
+    /* === EMPTY STATES === */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+ align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .empty .icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    /* === CUSTOM CURSOR === */
+    .cursor {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      z-index: 1000;
+    }
+
+    .cursor::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 24px;
+      height: 24px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      opacity: 0.5;
+      transform: scale(0.5);
+      transition: transform 0.3s ease;
+    }
+
+    .cursor:hover::after {
+      transform: scale(1);
+    }
+  </style>
+</head>
+<body>
+  <div class="glassmorphism">
+    <h1>Gestor de Tfas</h1>
+    <form id="task-form">
+      <input type="text" id="task-input" class="input" placeholder="Nova tarefa">
+      <button type="submit" class="button">Adicionar</button>
+    </form>
+    <ul id="task-list"></ul>
+  </div>
+
+  <script>
+    // Get the task list and form elements
+    const taskList = document.getElementById('task-list');
+    const taskForm = document.getElementById('task-form');
+    const taskInput = document.getElementById('task-input');
+
+    // Initialize the task list
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    // Render the task list
+    function renderTaskList() {
+      taskList.innerHTML = '';
+      tasks.forEach((task, index) => {
+        const taskElement =.createElement('li');
+        taskElement.textContent = task.name;
+        taskElement.dataset.index = index;
+        taskList.appendChild(taskElement);
+      });
+    }
+
+    // Add event listener to the form submit
+    taskForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const taskName = taskInput.value.trim();
+      if (taskName) {
+        tasks.push({ name: taskName, completed: false });
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        taskInput.value = '';
+        renderTaskList();
+      }
+    });
+
+    // Add event listener to the task list
+    taskList.addEventListener('click', (e) => {
+      if (e.target.tagName === 'LI') {
+        const taskIndex = e.target.dataset.index;
+        tasks[taskIndex].completed = !tasks[taskIndex].completed;
+ localStorage.setItem('tasks', JSON.stringify(tasks));
+        renderTaskList();
+      }
+    });
+
+    // Render the task list initially
+    renderTask();
+  </script>
+</body>
+</html>
